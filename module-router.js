@@ -9,7 +9,7 @@ class ModuleRouter extends HTMLElement {
     this.prepareLayout();
     this.injectStyles();
     this.scanRoutes();
-    
+
     window.addEventListener('popstate', () => this.route());
 
     document.addEventListener('click', (e) => {
@@ -56,7 +56,7 @@ class ModuleRouter extends HTMLElement {
       let fbtitle = src.replace(/\.[^/.]+$/, "").replace(/^\/|\/$/g, "");
       fbtitle = fbtitle.charAt(0).toUpperCase() + fbtitle.slice(1);
       const title = script.getAttribute('title') || fbtitle;
-      
+
       this.routes.push({
         path, src, title,
         regex: new RegExp(`^${path.replace(/:[^\s/]+/g, '([^\\/]+)')}$`)
@@ -73,8 +73,8 @@ class ModuleRouter extends HTMLElement {
 
   renderView(content, title = 'Untitled') {
     if (!this.layout) {
+      this.innerHTML = '';
       if (content instanceof HTMLElement) {
-        this.innerHTML = '';
         this.appendChild(content);
       } else {
         this.innerHTML = content;
@@ -82,12 +82,23 @@ class ModuleRouter extends HTMLElement {
       return;
     }
 
-    // Replace placeholders
-    let html = this.layout
-      .replace('{content}', content instanceof HTMLElement ? content.outerHTML : content)
-      .replace('{title}', title);
-    
-    this.innerHTML = html;
+    this.innerHTML = this.layout.replace('{title}', title);
+
+    const walker = document.createTreeWalker(this, NodeFilter.SHOW_TEXT);
+    let node;
+    while(node = walker.nextNode()) {
+      if (node.nodeValue.includes('{content}')) {
+        const parent = node.parentNode;
+        if (content instanceof HTMLElement) {
+          parent.replaceChild(content, node);
+        } else {
+          const temp = document.createElement('div');
+          temp.innerHTML = content;
+          parent.replaceChild(temp.firstElementChild, node);
+        }
+        break;
+      }
+    }
   }
 
   async route() {
@@ -126,17 +137,16 @@ class ModuleRouter extends HTMLElement {
       this.classList.add('mr-fade-out');
       await new Promise(r => setTimeout(r, 200));
 
-      // Pass the resolved title instead of the static match.title
       this.renderView(content, resolvedTitle);
-      
-      // Bonus: Update the actual browser tab title too!
+
       document.title = resolvedTitle;
 
       this.classList.remove('mr-fade-out');
 
       this.dispatchEvent(new CustomEvent('router:navigation-end', { detail: { path: currentPath, status: 200, module: match.src }, bubbles: true }));
     } catch (error) {
-      this.renderView('<h2>Failed to load page.</h2>', 'Error');
+      console.log("Error:", error);
+      this.renderView('<h2>Failed to load page.</h2> ', 'Error');
       this.classList.remove('mr-fade-out');
       this.dispatchEvent(new CustomEvent('router:navigation-end', { detail: { path: currentPath, status: 500, error }, bubbles: true }));
     }
