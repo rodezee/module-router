@@ -1,0 +1,25 @@
+{
+  "name": "module-router",
+  "version": "1.0.0",
+  "description": "A router that loads javascript modules as pages",
+  "main": "module-router.js",
+  "scripts": {
+    "test": "true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rodezee/module-router.git"
+  },
+  "keywords": [
+    "router",
+    "modules",
+    "browser",
+    "javascript"
+  ],
+  "author": "biensure",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rodezee/module-router/issues"
+  },
+  "homepage": "https://github.com/rodezee/module-router#readme"
+}
