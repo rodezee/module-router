@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <title>Module Router</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico">
+    <script type="module" src="/module-router.js"></script>
+    <script type="module" src="/about.js" path="/about"></script>
+    <script type="module" src="/hello-world.js" path="/:name"></script>
+    <script type="module" src="/hello-world.js" path="/"></script>
+    <script type="module" src="/iam.js" path="/iam/:firstname/:lastname"></script>
+  </head>
+  <body>
+    <module-router></module-router>
+  </body>
+</html>
